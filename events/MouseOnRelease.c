@@ -1,4 +1,4 @@
-#include "../Editor.h"
+#include "../inc/Editor.h"
 
 int    MouseOnRelease(int button, int x, int y, void *param)
 {

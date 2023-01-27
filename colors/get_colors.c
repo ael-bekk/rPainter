@@ -1,4 +1,4 @@
-#include "../Editor.h"
+#include "../inc/Editor.h"
 
 // get the address of a pixel
 unsigned int *get_pixel(t_img *img, int x, int y)

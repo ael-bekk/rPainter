@@ -1,4 +1,4 @@
-#include "../Editor.h"
+#include "../inc/Editor.h"
 
 int    MouseMove(int x, int y, void *param)
 {
@@ -25,14 +25,14 @@ int    MouseMove(int x, int y, void *param)
         else if (y > WIN_HEIGHT)
             screen_info.right_down_corner_y = WIN_HEIGHT - screen_info.middle_y  - screen_info.scroll_bare_size - 30;
     }
-    if (screen_info.canvas_OnClick)
+    if (screen_info.canvas_OnClick && !keys.cntrl)
         for (int i = 0; i < map.height; i++)
             for (int j = 0; j < map.width; j++)
                 if (x >= MAX(map.x + j * map.cell_size, 0) && x <= MIN(map.x + (j + 1) * map.cell_size, WIN_WIDTH - screen_info.middle_x)
                     && y >= MAX(map.y + i * map.cell_size, 0) && y <= MIN(map.y + (i + 1) * map.cell_size, WIN_HEIGHT)) {
-                    if (f)
+                    if (keys.f)
                         bucket_tool(j, i, map.cells[i][j].color);
-                    else if (b)
+                    else if (keys.b)
                         brush_tool(j - (mouse.size_of_the_brush - 1) / 2, i - (mouse.size_of_the_brush - 1) / 2, mouse_OnClick.color);
                     break;
                 }
@@ -45,7 +45,9 @@ int    MouseMove(int x, int y, void *param)
     if (rgb.shade_OnClick)
         rgb.shade = shade_setter(x);
     
-    
+    if (mouse_OnClick.event && keys.cntrl && x < WIN_WIDTH - screen_info.middle_x - 15)
+        map.x -= (mouse.x - x) * 2,
+        map.y -= (mouse.y - y) * 2;
 
     mouse.x = x;
     mouse.y = y;

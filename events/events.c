@@ -1,4 +1,4 @@
-#include "../Editor.h"
+#include "../inc/Editor.h"
 
 int OnHover(int x, int y, int w, int h) {
 

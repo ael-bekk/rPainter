@@ -1,119 +1,29 @@
-#include "Editor.h"
+#include "inc/Editor.h"
+
+int             color_list[1028] = {0xff4000, 0xff8000, 0xffbf00, 0xffff00, 0xbfff00, 0x80ff00,
+                                0x40ff00, 0x00ff00, 0x00ff40, 0x00ff80, 0x00ffbf, 0x00ffff,
+                                0x00bfff, 0x0080ff, 0x0066ff, 0x0040ff, 0x0000ff, 0x4000ff,
+                                0x8000ff, 0xbf00ff, 0xff00ff, 0xff00bf, 0xff0080, 0xff0040,
+                                0xff0000};
+int             initial_colors_size = 25;
+
+t_screen_info   screen_info;
+t_rgb           rgb;
+t_map           map;
+t_keys          keys;
+void            *mlx;
+void            *win;
+t_imgs          *img;
+t_img           global_img;
+int             img_count;
+t_mouse         mouse;
+t_mouse         mouse_OnClick;
 
 
 
-// resize img (original to img)
-void    path_img_to_img(t_img *img, char *path_img, int width, int height)
-{
-    t_img   _img;
-
-    _img.img = mlx_xpm_file_to_image(mlx, path_img, &_img.width, &_img.height);
-    _img.data = mlx_get_data_addr(_img.img, &_img.bpp, &_img.size_line, &_img.endian);
-
-    for (int y = 0; y < height; y++)
-        for (int x = 0; x < width; x++)
-            *get_pixel(img, x, y) = *get_pixel(&_img,
-                                            (float)x / (float)width * (float)_img.width,
-                                            (float)y / (float)height * (float)_img.height);
-    mlx_destroy_image(mlx, _img.img);
-}
-
-// fill img with color
-void    color_to_img(t_img *img, unsigned int color, int width, int height)
-{
-    for (int y = 0; y < height; y++)
-        for (int x = 0; x < width; x++)
-            *get_pixel(img, x, y) = color;
-}
-
-// create new img
-t_img   *new_img(void *mlx, char *path_img, int width, int height)
-{
-    t_img   *img;
-
-    img = (t_img *)malloc(sizeof(t_img));
-    img->path = path_img;
-    img->img = mlx_new_image(mlx, width, height);
-    img->data = mlx_get_data_addr(img->img, &img->bpp, &img->size_line, &img->endian);
-    path_img_to_img(img, path_img, width, height);
-    img->width = width;
-    img->height = height;
-    return (img);
-}
-
-// push img to list of imgs
-void    push_back(t_imgs **head, t_img *img)
-{
-    t_imgs  *new;
-    t_imgs  *tmp;
-
-    new = (t_imgs *)malloc(sizeof(t_imgs));
-    new->img = img;
-    new->still_in_dir = 1;
-    new->next = NULL;
-    if (*head == NULL)
-    {
-        *head = new;
-        return ;
-    }
-    tmp = *head;
-    while (tmp->next)
-        tmp = tmp->next;
-    tmp->next = new;
-}
-
-// size of list of imgs
-int     lst_img_size(t_imgs *tmp)
-{
-    int     i;
-
-    i = 0;
-    while (tmp) i++, tmp = tmp->next;
-    return (i);
-}
-
-// draw img
-void    draw_img(t_img *img, int x, int y, int w, int h, t_img *img_to_draw) {
-
-    for (int _y = y; _y < y + h; _y++)
-        for (int _x = x; _x < x + w; _x++)
-            if (_x >= 0 && _x < WIN_WIDTH && _y >= 0 && _y < WIN_HEIGHT)
-                *get_pixel(img, _x, _y) = *get_pixel(img_to_draw, (_x - x) * img_to_draw->width / w, (_y - y) * img_to_draw->height / h);
-}
-
-void    draw_brush_rect(t_img *img, int x, int y, int width, int height) {
 
 
-    for (int _y = MAX(y, 0); _y < MIN(height, WIN_HEIGHT); _y++)
-        for (int _x = MAX(x, 0); _x < MIN(width, WIN_WIDTH); _x++)
-            if ((_x - map.x - map.cell_size) / map.cell_size >= 0 && (_x - map.x) / map.cell_size < map.width && (_y - map.y - map.cell_size) / map.cell_size >= 0 && (_y - map.y) / map.cell_size < map.height)
-            {
-                int c = map.cells[(_y - map.y) / map.cell_size][(_x - map.x) / map.cell_size].color;
-                *get_pixel(img, _x, _y) = 0xffffff * (((c >> 16) & 0xff) < 128 && ((c >> 8) & 0xff) < 128 && (c & 0xff) < 128);
-            }
-            else
-                *get_pixel(img, _x, _y) = 0xffffff;
-}
 
-void    draw_brush_border(t_img *img, int x, int y, int width, int height, int boarder, int boarder_size) {
-
-    draw_brush_rect(img, x, y - boarder_size, width, y); // up boarder
-    draw_brush_rect(img, x, height, width, height + boarder_size); // down boarder
-    draw_brush_rect(img, x - boarder_size, y - boarder_size, x, height + boarder_size); // left boarder
-    draw_brush_rect(img, width, y - boarder_size, width + boarder_size, height + boarder_size); // right boarder
-}
-
-
-void    brush_border() {
-
-    int x = (mouse.x - map.x) / map.cell_size - (mouse.size_of_the_brush - 1) / 2;
-    int y = (mouse.y - map.y) / map.cell_size - (mouse.size_of_the_brush - 1) / 2;
-    int w = MIN(WIN_WIDTH - screen_info.middle_x, (mouse.x - map.x) / map.cell_size + (mouse.size_of_the_brush - 1) / 2 + 1);
-    int h = MIN(WIN_HEIGHT, (mouse.y - map.y) / map.cell_size + (mouse.size_of_the_brush - 1) / 2 + 1);
-
-    draw_brush_border(&global_img, x * map.cell_size + map.x, y * map.cell_size + map.y, w * map.cell_size + map.x, h * map.cell_size + map.y, 0x000000 + 0xfffff, 1);
-
-}
 
 void    display_map()
 {
@@ -124,12 +34,12 @@ void    display_map()
         for (int y = 0; y < map.height; y++)
             for (int x = 0; x < map.width; x++)
                 if (map.cells[y][x].is_color)
-                    draw_rect_bordered_in(x * map.cell_size + map.x - !!x * !g, y * map.cell_size + map.y - !!y * !g, (x + 1) * map.cell_size + map.x, (y + 1) * map.cell_size + map.y, map.cells[y][x].color, (x + 1) * map.cell_size + map.x, 0xcccccc, !g);
+                    draw_rect_bordered_in(x * map.cell_size + map.x - !!x * !keys.g, y * map.cell_size + map.y - !!y * !keys.g, (x + 1) * map.cell_size + map.x, (y + 1) * map.cell_size + map.y, map.cells[y][x].color, (x + 1) * map.cell_size + map.x, 0xcccccc, !keys.g);
                 else if (map.cells[y][x].is_img)
-                    draw_img(&global_img, x * map.cell_size + map.x - !!x * !g, y * map.cell_size + map.y - !!y * !g, map.cell_size, map.cell_size, map.cells[y][x].img);
+                    draw_img(&global_img, x * map.cell_size + map.x - !!x * !keys.g, y * map.cell_size + map.y - !!y * !keys.g, map.cell_size, map.cell_size, map.cells[y][x].img);
 
     // draw brush border
-        if (b)
+        if (keys.b)
             brush_border();
 
     // clear up right corner
@@ -241,7 +151,6 @@ int     CloseWin(void *param)
     exit(0);
 }
 
-
 int is_color_exist(int color)
 {
     for (int i = 0; i < initial_colors_size; i++)
@@ -250,69 +159,7 @@ int is_color_exist(int color)
     return (0);
 }
 
-void    bucket_tool(int x, int y, int color)
-{
-    if (x < 0 || x >= map.width || y < 0 || y >= map.height || map.cells[y][x].color != color || map.cells[y][x].color == mouse_OnClick.color)
-        return ;
 
-    map.cells[y][x].color = mouse_OnClick.color,
-    map.cells[y][x].is_color = TRUE,
-    map.cells[y][x].is_img = FALSE;
-    bucket_tool(x + 1, y, color);
-    bucket_tool(x - 1, y, color);
-    bucket_tool(x, y + 1, color);
-    bucket_tool(x, y - 1, color);
-}
-
-void    brush_tool(int x, int y, int color)
-{
-    for (int i = y; i < mouse.size_of_the_brush + y; i++)
-        for (int j = x; j < mouse.size_of_the_brush + x; j++)
-            if (i >= 0 && i < map.height && j >= 0 && j < map.width)
-                map.cells[i][j].color = mouse_OnClick.color,
-                map.cells[i][j].is_color = TRUE,
-                map.cells[i][j].is_img = FALSE;
-}
-
-int already_in_list(char *d)
-{
-    t_imgs *tmp = img;
-    while (tmp)
-    {
-        if (!strcmp(tmp->img->path, d))
-            return (tmp->still_in_dir = 1);
-        tmp = tmp->next;
-    }
-    return (0);
-}
-
-void clear_list()
-{
-    t_imgs *tmp = img;
-
-    while (tmp && tmp->next)
-    {
-        if (!tmp->next->still_in_dir) {
-            t_imgs *tmp2 = tmp->next;
-            tmp->next = tmp->next->next;
-            mlx_destroy_image(mlx, tmp2->img->img);
-            free(tmp2->img->path);
-            free(tmp2->img);
-            free(tmp2);
-        }
-        else
-            tmp->still_in_dir *= (tmp == img),
-            tmp = tmp->next;
-    }
-    if (img && !img->still_in_dir) {
-        t_imgs *tmp2 = tmp;
-        img = img->next;
-        mlx_destroy_image(mlx, tmp2->img->img);
-        free(tmp2->img->path);
-        free(tmp2->img);
-        free(tmp2);
-    }
-}
 
 int	search_in_dir()
 {
@@ -328,47 +175,12 @@ int	search_in_dir()
         {
             strcat(d, p->d_name);
             if (!already_in_list(d))
-                push_back(&img, new_img(mlx, strdup(d), 200, 200));
+                push_back(&img, new_img(mlx, strdup(d), 100, 100));
             d[4] = '\0';
         }
 	closedir(dir);
     clear_list();
 	return (0);
-}
-
-int rendering(void *param)
-{
-    (void)param;
-
-
-    if (!(img_count++ % 10)) {
-        
-        if (CAN_MV_MID(screen_info.middle_OnClick, (screen_info.middle_x + screen_info.new_middle_x) / 2)) {
-        
-            int size = lst_img_size(img);
-            screen_info.scroll_bare_size = (WIN_HEIGHT - screen_info.middle_y) - ((size / ((screen_info.middle_x - 10) / 110)) + !!(size % ((screen_info.middle_x - 10) / 110))) * 110 + (WIN_HEIGHT - screen_info.middle_y) - 40;
-            if (screen_info.scroll_bare_size > WIN_HEIGHT - screen_info.middle_y - screen_info.right_down_corner_y)
-                screen_info.scroll_bare_size = WIN_HEIGHT - screen_info.middle_y - screen_info.right_down_corner_y - 10;
-            screen_info.right_down_corner_y -= 20 * (screen_info.right_down_corner_y >= 20);
-            (screen_info.middle_x = (screen_info.middle_x + screen_info.new_middle_x) / 2);
-        }
-        display_map();
-    }
-
-    if (img_count > 1000)
-    {
-        // read imgs
-                search_in_dir();
-        // resize bare
-        {
-            int size = lst_img_size(img);
-            screen_info.scroll_bare_size = (WIN_HEIGHT - screen_info.middle_y) - ((size / ((screen_info.middle_x - 10) / 110)) + !!(size % ((screen_info.middle_x - 10) / 110))) * 110 + (WIN_HEIGHT - screen_info.middle_y) - 40;
-            if (screen_info.scroll_bare_size > WIN_HEIGHT - screen_info.middle_y - screen_info.right_down_corner_y)
-                screen_info.scroll_bare_size = WIN_HEIGHT - screen_info.middle_y - screen_info.right_down_corner_y - 10;
-        }
-        img_count = 0;
-    }
-    return (0);
 }
 
 int	main()
@@ -387,10 +199,9 @@ int	main()
         global_img.img = mlx_new_image(mlx, global_img.width, global_img.height);
         global_img.data = mlx_get_data_addr(global_img.img, &global_img.bpp, &global_img.size_line, &global_img.endian);
     }
-
     // random
         srand(time(0));
-
+    
     // initialize screen_info
     {
         screen_info.middle_x = screen_info.new_middle_x = WIN_WIDTH / 4;
@@ -413,13 +224,13 @@ int	main()
         screen_info.canvas_OnClick = FALSE;
     }
 
-    // initialize rgb
+    // initialize rgb 
         rgb.r_OnClick = rgb.g_OnClick = rgb.b_OnClick = rgb.shade_OnClick = FALSE;
         rgb.r =  rgb.g = rgb.b = 100;
         rgb.shade = 255;
 
     // initialize mouse
-        mouse.size_of_the_brush = 3;
+        mouse.size_of_the_brush = 2;
         mouse.x = mouse.y = 0;
         mouse.img = NULL;
         mouse.color = 0;
@@ -450,9 +261,7 @@ int	main()
         }
         map.cell_size = 100;
     }
-
-    b = TRUE;
-    initial_colors_size = 25;
+    keys.b = TRUE;
 	display_map();  // display window
     
 

@@ -1,20 +1,35 @@
-#include "../Editor.h"
+#include "../inc/Editor.h"
 
 int     KeyPress(int key, void *param)
 {
     (void)param;
-    if (key == 53)
-        exit(0);
-    // press on the keyboard on 'g'
-    if (key == 5)
-        g = !g;
-    // press on the keyboard on 'b'
-    if (key == 11)
-        f = 0,
-        b = 1;
-    // press on the keyboard on 'f'
-    if (key == 3)
-        b = 0,
-        f = 1;
+
+    switch(key) {
+
+        case KEY_ESC:
+            exit(0);
+            break;
+
+        case KEY_G:
+            keys.g = !keys.g;
+            break;
+
+        case KEY_B:
+            keys.f = 0;
+            keys.b = 1;
+            break;
+
+        case KEY_F:
+            keys.b = 0;
+            keys.f = 1;
+            break;
+
+        case KEY_CNTRL:
+            keys.cntrl = 1;
+            break;
+
+        default:
+            break;
+    }
     return (0);
 }
