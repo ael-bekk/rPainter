@@ -41,7 +41,7 @@ void    CanvasScrollUp() {
     if (x >= 0 && x <= bound_x && y >= 0 && y <= WIN_HEIGHT && !screen_info.middle_OnClick)
     {
         if (!keys.cntrl) {
-            if (map.cell_size > 20)
+            if (map.cell_size > 6)
                 map.x += round((float)((float)(x - map.x) / (float)map.cell_size) * 5),
                 map.y += round((float)((float)(y - map.y) / (float)map.cell_size) * 5),
                 map.cell_size -= 5;

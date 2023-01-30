@@ -245,8 +245,8 @@ int	main()
     {
         map.x = +20;
         map.y = +20;
-        map.width = 50;
-        map.height = 20;
+        map.width = 100;
+        map.height = 100;
         map.cells = (t_cell**)malloc(sizeof(t_cell*) * map.height);
         for (int i = 0; i < map.height; i++)
         {
