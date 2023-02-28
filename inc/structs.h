@@ -47,10 +47,14 @@ typedef struct s_screen_info
     int     small_color_OnClick;
     int     small_color_OnHover;
     int     canvas_OnClick;
+    t_img   imgs;
+    t_img   colors;
+    int     swp;
 }   t_screen_info;
 
 typedef struct s_mouse
 {
+    int     bol;
     int     size_of_the_brush;
     int     event;
     int     x;

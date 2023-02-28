@@ -31,7 +31,7 @@ int    MouseMove(int x, int y, void *param)
                 if (x >= MAX(map.x + j * map.cell_size, 0) && x <= MIN(map.x + (j + 1) * map.cell_size, WIN_WIDTH - screen_info.middle_x)
                     && y >= MAX(map.y + i * map.cell_size, 0) && y <= MIN(map.y + (i + 1) * map.cell_size, WIN_HEIGHT)) {
                     if (keys.f)
-                        bucket_tool(j, i, map.cells[i][j].color);
+                        bucket_tool(j, i, map.cells[i][j].color, map.cells[i][j].img);
                     else if (keys.b)
                         brush_tool(j - (mouse.size_of_the_brush - 1) / 2, i - (mouse.size_of_the_brush - 1) / 2, mouse_OnClick.color);
                     break;

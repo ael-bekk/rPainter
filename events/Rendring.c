@@ -4,7 +4,6 @@ int rendering(void *param)
 {
     (void)param;
 
-
     if (!(img_count++ % 10)) {
         
         if (CAN_MV_MID(screen_info.middle_OnClick, (screen_info.middle_x + screen_info.new_middle_x) / 2)) {
@@ -22,7 +21,7 @@ int rendering(void *param)
     if (img_count > 1000)
     {
         // read imgs
-                search_in_dir();
+            search_in_dir();
         // resize bare
         {
             int size = lst_img_size(img);

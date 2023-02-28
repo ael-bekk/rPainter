@@ -33,18 +33,26 @@ void    brush_border() {
 
 }
 
-void    bucket_tool(int x, int y, int color)
+void    bucket_tool(int x, int y, int color, t_img *img)
 {
-    if (x < 0 || x >= map.width || y < 0 || y >= map.height || map.cells[y][x].color != color || map.cells[y][x].color == mouse_OnClick.color)
+    if (x < 0 || x >= map.width || y < 0 || y >= map.height)
         return ;
-
-    map.cells[y][x].color = mouse_OnClick.color,
-    map.cells[y][x].is_color = TRUE,
-    map.cells[y][x].is_img = FALSE;
-    bucket_tool(x + 1, y, color);
-    bucket_tool(x - 1, y, color);
-    bucket_tool(x, y + 1, color);
-    bucket_tool(x, y - 1, color);
+    if (!mouse_OnClick.bol && (map.cells[y][x].color != color || map.cells[y][x].color == mouse_OnClick.color))
+        return ;
+    if (mouse_OnClick.bol && (map.cells[y][x].img != img || map.cells[y][x].img == mouse_OnClick.img))
+        return ;
+    if (!mouse_OnClick.bol)
+        map.cells[y][x].color = mouse_OnClick.color,
+        map.cells[y][x].img = NULL;
+    else
+        map.cells[y][x].color = 2^31,
+        map.cells[y][x].img = mouse_OnClick.img;
+    map.cells[y][x].is_color = !mouse_OnClick.bol;
+    map.cells[y][x].is_img = mouse_OnClick.bol;
+    bucket_tool(x + 1, y, color, img);
+    bucket_tool(x - 1, y, color, img);
+    bucket_tool(x, y + 1, color, img);
+    bucket_tool(x, y - 1, color, img);
 }
 
 void    brush_tool(int x, int y, int color)
@@ -53,6 +61,7 @@ void    brush_tool(int x, int y, int color)
         for (int j = x; j < mouse.size_of_the_brush + x; j++)
             if (i >= 0 && i < map.height && j >= 0 && j < map.width)
                 map.cells[i][j].color = mouse_OnClick.color,
-                map.cells[i][j].is_color = TRUE,
-                map.cells[i][j].is_img = FALSE;
+                map.cells[i][j].img = mouse_OnClick.img,
+                map.cells[i][j].is_color = !mouse_OnClick.bol,
+                map.cells[i][j].is_img = mouse_OnClick.bol;
 }

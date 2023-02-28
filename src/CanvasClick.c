@@ -17,7 +17,7 @@ void    CanvasRightClick() {
                     int x_x = (mouse.size_of_the_brush - 1) / 2;
                     if (x >= map.x + j * map.cell_size && x <= map.x + (j + 1) * map.cell_size && y >= map.y + i * map.cell_size && y <= map.y + (i + 1) * map.cell_size) {
                         if (keys.f)
-                            bucket_tool(j, i, map.cells[i][j].color);
+                            bucket_tool(j, i, map.cells[i][j].color, map.cells[i][j].img);
                         else if (keys.b)
                             brush_tool(j - x_x, i - x_x, mouse_OnClick.color);
                         brk = 0;

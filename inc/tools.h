@@ -14,7 +14,7 @@ void            draw_img(t_img *img, int x, int y, int w, int h, t_img *img_to_d
 void            draw_brush_rect(t_img *img, int x, int y, int width, int height);
 void            draw_brush_border(t_img *img, int x, int y, int width, int height, int boarder, int boarder_size);
 void            brush_border();
-void            bucket_tool(int x, int y, int color);
+void            bucket_tool(int x, int y, int color, t_img *img);
 void            brush_tool(int x, int y, int color);
 
 #endif

@@ -2,7 +2,7 @@ NAME	= Editor
 
 SRCS	= main.c \
 			lib/rectangle.c \
-			events/Randring.c events/KeyOnRelease.c events/KeyPress.c events/MouseMove.c events/MouseOnClick.c events/MouseOnRelease.c events/events.c \
+			events/Rendring.c events/KeyOnRelease.c events/KeyPress.c events/MouseMove.c events/MouseOnClick.c events/MouseOnRelease.c events/events.c \
 			colors/get_colors.c \
 			tools/img_list.c tools/BrushAndBucket.c \
 			src/CanvasClick.c

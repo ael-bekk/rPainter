@@ -20,16 +20,11 @@ t_mouse         mouse;
 t_mouse         mouse_OnClick;
 
 
-
-
-
-
-
 void    display_map()
 {
     // clear global_img
         draw_rect(&global_img, 0, 0, WIN_WIDTH - screen_info.middle_x, WIN_HEIGHT, 0x99aabb);
-
+    
     // draw map
         for (int y = 0; y < map.height; y++)
             for (int x = 0; x < map.width; x++)
@@ -61,82 +56,111 @@ void    display_map()
     // draw middle line (y)
         draw_rect(&global_img, WIN_WIDTH - screen_info.middle_x, screen_info.middle_y, WIN_WIDTH, screen_info.middle_y + 1, 0xaa0000);
 
-    // display imgs in the right side
-    // {
-    //     t_imgs *tmp = img;
-    //     int start_x = WIN_WIDTH - screen_info.middle_x + 10;
-    //     int start_y = screen_info.middle_y + 10;
-    //     if (tmp)
-    //         start_x += ((WIN_WIDTH - start_x) % (tmp->img->width + 10)) / 2;
-    //     int scrl = screen_info.right_down_corner_y;
-    //     while (tmp)
-    //     {
-    //         if (start_x + tmp->img->width > WIN_WIDTH)
-    //         {
-    //             start_x = WIN_WIDTH - screen_info.middle_x + 10;
-    //             start_x += ((WIN_WIDTH - start_x) % (tmp->img->width + 10)) / 2;
-    //             if (scrl < tmp->img->height + 10) {
-    //                 start_y += tmp->img->height + 10 - scrl;
-    //                 scrl = 0;
-    //             } else
-    //                 scrl -= tmp->img->height + 10;
-    //         }
-    //         for (int y = 0; y < tmp->img->height && start_y + y < WIN_HEIGHT; y++)
-    //             for (int x = 0; x < tmp->img->width && start_x + x < WIN_WIDTH; x++)
-    //                 if (y >= scrl)
-    //                     *get_pixel(&global_img, start_x + x, start_y + y - scrl) = *get_pixel(tmp->img, x, y);
-    //         start_x += tmp->img->width + 10;
-    //         tmp = tmp->next;
-    //     }
-    //     // draw the scroll bar
-    //         draw_rect(&global_img, WIN_WIDTH - 5 - screen_info.bare_OnHover * 5, screen_info.right_down_corner_y + screen_info.middle_y, WIN_WIDTH, screen_info.scroll_bare_size + screen_info.right_down_corner_y + screen_info.middle_y, 0xff0000 + screen_info.bare_OnHover * 0x0000ff);
-    // }
-
-    // display a colors customized
+    // draw menu
     {
-        int start_x = WIN_WIDTH - screen_info.middle_x + 10;
-        int start_y = screen_info.middle_y + 50;
-        int _size = WIN_WIDTH - screen_info.middle_x / 2 - 100;
-
-        draw_rect_bordered(_size, start_y, _size + 200, start_y + 10, 255 << 16, _size + (float)rgb.r * (200.0 / 255.0), 0xffffff, 1); // red bar
-        draw_rect_bordered(_size + (float)rgb.r * (200.0 / 255.0) - 5, start_y - 5, _size + (float)rgb.r * (200.0 / 255.0) + 5, start_y + 15, 0xffffff, _size + (float)rgb.r * (200.0 / 255.0) + 5, 255 << 16, 1); // red controller
-
-        draw_rect_bordered(_size, start_y + 90, _size + 200, start_y + 100, 255 << 8, _size + (float)rgb.g * (200.0 / 255.0), 0xffffff, 1); // green bar
-        draw_rect_bordered(_size + (float)rgb.g * (200.0 / 255.0) - 5, start_y + 85, _size + (float)rgb.g * (200.0 / 255.0) + 5, start_y + 105, 0xffffff, _size + (float)rgb.g * (200.0 / 255.0) + 5, 255 << 8, 1); // green controller
-
-        draw_rect_bordered(_size, start_y + 170, _size + 200, start_y + 180, 255, _size + (float)rgb.b * (200.0 / 255.0), 0xffffff, 1); // blue bar
-        draw_rect_bordered(_size + (float)rgb.b * (200.0 / 255.0) - 5, start_y + 165, _size + (float)rgb.b * (200.0 / 255.0) + 5, start_y + 185, 0xffffff, _size + (float)rgb.b * (200.0 / 255.0) + 5, 255, 1); // blue controller
-
-        draw_rect_bordered_gradient(_size, start_y + 260, _size + 200, start_y + 270, base_color(), _size + 200, 0xffffff, 1); // shade bar
-        draw_rect_bordered(_size + (float)rgb.shade * (200.0 / 511.0) - 5, start_y + 255, _size + (float)rgb.shade * (200.0 / 511.0) + 5, start_y + 275, 0xffffff, _size + (float)rgb.shade * (200.0 / 511.0) + 5, 0x000000, 1); // shade controller
-        
-        int Hover = OnHover(_size, start_y + 350, _size + 200, start_y + 460);
-        int Click = OnClick(_size, start_y + 350, _size + 100, start_y + 460);
-        draw_rect_bordered(_size, start_y + 350, _size + 100, start_y + 460, full_color(), _size + 100, 0xffffff * !Click, 2 + Hover); // shade bar
-        draw_rect_bordered(_size + 100, start_y + 350, _size + 200, start_y + 460, mouse_OnClick.color, _size + 200, 0xffffff, 2 + Hover); // shade bar
+        int start_x = WIN_WIDTH - screen_info.middle_x + 100;
+        int start_y = 100;
+        for (int y = 0; y < screen_info.imgs.height; y++)
+            for (int x = 0; x < screen_info.imgs.width; x++)
+                if (*get_pixel(&screen_info.imgs, x, y) != 0xffffff)
+                {
+                    if (OnClick(start_x, start_y, start_x + screen_info.imgs.width, start_y + screen_info.imgs.height))
+                        *get_pixel(&global_img, start_x + x, start_y + y) = 0xff0000;
+                    else if (OnHover(start_x, start_y, start_x + screen_info.imgs.width, start_y + screen_info.imgs.height))
+                        *get_pixel(&global_img, start_x + x, start_y + y) = 0xff8888;
+                    else
+                        *get_pixel(&global_img, start_x + x, start_y + y) = *get_pixel(&screen_info.imgs, x, y);
+                }
+        start_x += 100 + screen_info.imgs.width;
+        for (int y = 0; y < screen_info.colors.height; y++)
+            for (int x = 0; x < screen_info.colors.width; x++)
+                if (*get_pixel(&screen_info.colors, x, y) != 0xffffff)
+                {
+                    if (OnClick(start_x, start_y, start_x + screen_info.colors.width, start_y + screen_info.colors.height))
+                        *get_pixel(&global_img, start_x + x, start_y + y) = 0xff0000;
+                    else if (OnHover(start_x, start_y, start_x + screen_info.colors.width, start_y + screen_info.colors.height))
+                        *get_pixel(&global_img, start_x + x, start_y + y) = 0xff8888;
+                    else
+                        *get_pixel(&global_img, start_x + x, start_y + y) = *get_pixel(&screen_info.colors, x, y);
+                }
     }
-
-    // display colors in the right side
-    {
+    if (screen_info.swp)
+    {   // display imgs in the right side
+        t_imgs *tmp = img;
         int start_x = WIN_WIDTH - screen_info.middle_x + 10;
-        int start_y = screen_info.middle_y + 680;
-        int scrl = 0;
-        int w = 20, h = 20;
-        for (int i = 0; i < initial_colors_size; i++)
+        int start_y = screen_info.middle_y + 10;
+        if (tmp)
+            start_x += ((WIN_WIDTH - start_x) % (tmp->img->width + 10)) / 2;
+        int scrl = screen_info.right_down_corner_y;
+        while (tmp)
         {
-            if (start_x + w > WIN_WIDTH)
+            if (start_x + tmp->img->width > WIN_WIDTH)
             {
                 start_x = WIN_WIDTH - screen_info.middle_x + 10;
-                if (scrl < h + 10) {
-                    start_y += h + 10 - scrl;
+                start_x += ((WIN_WIDTH - start_x) % (tmp->img->width + 10)) / 2;
+                if (scrl < tmp->img->height + 10) {
+                    start_y += tmp->img->height + 10 - scrl;
                     scrl = 0;
                 } else
-                    scrl -= h + 10;
+                    scrl -= tmp->img->height + 10;
             }
-            int Click = OnClick(start_x, start_y - scrl, MIN(start_x + w, WIN_WIDTH), MIN(start_y + h, WIN_HEIGHT)) * 2;
-            int Hover = OnHover(start_x, start_y - scrl, MIN(start_x + w, WIN_WIDTH), MIN(start_y + h, WIN_HEIGHT)) * 3;
-            draw_rect_bordered(start_x - Hover, start_y - scrl - Hover, MIN(start_x + w + Hover, WIN_WIDTH), MIN(start_y + h + Hover, WIN_HEIGHT), color_list[i], MIN(start_x + w + Hover, WIN_WIDTH), 0x999999, 1 + Click);
-            start_x += w + 10;
+            for (int y = 0; y < tmp->img->height && start_y + y < WIN_HEIGHT; y++)
+                for (int x = 0; x < tmp->img->width && start_x + x < WIN_WIDTH; x++)
+                    if (y >= scrl)
+                        *get_pixel(&global_img, start_x + x, start_y + y - scrl) = *get_pixel(tmp->img, x, y);
+            start_x += tmp->img->width + 10;
+            tmp = tmp->next;
+        }
+        // draw the scroll bar
+            draw_rect(&global_img, WIN_WIDTH - 5 - screen_info.bare_OnHover * 5, screen_info.right_down_corner_y + screen_info.middle_y, WIN_WIDTH, screen_info.scroll_bare_size + screen_info.right_down_corner_y + screen_info.middle_y, 0xff0000 + screen_info.bare_OnHover * 0x0000ff);
+    } else
+    {
+        // display a colors customized
+        {
+            int start_x = WIN_WIDTH - screen_info.middle_x + 10;
+            int start_y = screen_info.middle_y + 50;
+            int _size = WIN_WIDTH - screen_info.middle_x / 2 - 100;
+
+            draw_rect_bordered(_size, start_y, _size + 200, start_y + 10, 255 << 16, _size + (float)rgb.r * (200.0 / 255.0), 0xffffff, 1); // red bar
+            draw_rect_bordered(_size + (float)rgb.r * (200.0 / 255.0) - 5, start_y - 5, _size + (float)rgb.r * (200.0 / 255.0) + 5, start_y + 15, 0xffffff, _size + (float)rgb.r * (200.0 / 255.0) + 5, 255 << 16, 1); // red controller
+
+            draw_rect_bordered(_size, start_y + 90, _size + 200, start_y + 100, 255 << 8, _size + (float)rgb.g * (200.0 / 255.0), 0xffffff, 1); // green bar
+            draw_rect_bordered(_size + (float)rgb.g * (200.0 / 255.0) - 5, start_y + 85, _size + (float)rgb.g * (200.0 / 255.0) + 5, start_y + 105, 0xffffff, _size + (float)rgb.g * (200.0 / 255.0) + 5, 255 << 8, 1); // green controller
+
+            draw_rect_bordered(_size, start_y + 170, _size + 200, start_y + 180, 255, _size + (float)rgb.b * (200.0 / 255.0), 0xffffff, 1); // blue bar
+            draw_rect_bordered(_size + (float)rgb.b * (200.0 / 255.0) - 5, start_y + 165, _size + (float)rgb.b * (200.0 / 255.0) + 5, start_y + 185, 0xffffff, _size + (float)rgb.b * (200.0 / 255.0) + 5, 255, 1); // blue controller
+
+            draw_rect_bordered_gradient(_size, start_y + 260, _size + 200, start_y + 270, base_color(), _size + 200, 0xffffff, 1); // shade bar
+            draw_rect_bordered(_size + (float)rgb.shade * (200.0 / 511.0) - 5, start_y + 255, _size + (float)rgb.shade * (200.0 / 511.0) + 5, start_y + 275, 0xffffff, _size + (float)rgb.shade * (200.0 / 511.0) + 5, 0x000000, 1); // shade controller
+            
+            int Hover = OnHover(_size, start_y + 350, _size + 200, start_y + 460);
+            int Click = OnClick(_size, start_y + 350, _size + 100, start_y + 460);
+            draw_rect_bordered(_size, start_y + 350, _size + 100, start_y + 460, full_color(), _size + 100, 0xffffff * !Click, 2 + Hover); // shade bar
+            draw_rect_bordered(_size + 100, start_y + 350, _size + 200, start_y + 460, mouse_OnClick.color, _size + 200, 0xffffff, 2 + Hover); // shade bar
+        }
+
+        // display colors in the right side
+        {
+            int start_x = WIN_WIDTH - screen_info.middle_x + 10;
+            int start_y = screen_info.middle_y + 680;
+            int scrl = 0;
+            int w = 20, h = 20;
+            for (int i = 0; i < initial_colors_size; i++)
+            {
+                if (start_x + w > WIN_WIDTH)
+                {
+                    start_x = WIN_WIDTH - screen_info.middle_x + 10;
+                    if (scrl < h + 10) {
+                        start_y += h + 10 - scrl;
+                        scrl = 0;
+                    } else
+                        scrl -= h + 10;
+                }
+                int Click = OnClick(start_x, start_y - scrl, MIN(start_x + w, WIN_WIDTH), MIN(start_y + h, WIN_HEIGHT)) * 2;
+                int Hover = OnHover(start_x, start_y - scrl, MIN(start_x + w, WIN_WIDTH), MIN(start_y + h, WIN_HEIGHT)) * 3;
+                draw_rect_bordered(start_x - Hover, start_y - scrl - Hover, MIN(start_x + w + Hover, WIN_WIDTH), MIN(start_y + h + Hover, WIN_HEIGHT), color_list[i], MIN(start_x + w + Hover, WIN_WIDTH), 0x999999, 1 + Click);
+                start_x += w + 10;
+            }
         }
     }
 
@@ -222,9 +246,14 @@ int	main()
         screen_info.small_color_OnClick = FALSE;
         screen_info.small_color_OnHover = FALSE;
         screen_info.canvas_OnClick = FALSE;
+        screen_info.imgs.img = mlx_xpm_file_to_image(mlx, ".head/imgs.xpm", &screen_info.imgs.width, &screen_info.imgs.height);
+        screen_info.imgs.data = mlx_get_data_addr(screen_info.imgs.img, &screen_info.imgs.bpp, &screen_info.imgs.size_line, &screen_info.imgs.endian);
+        screen_info.colors.img = mlx_xpm_file_to_image(mlx, ".head/colors.xpm", &screen_info.colors.width, &screen_info.colors.height);
+        screen_info.colors.data = mlx_get_data_addr(screen_info.colors.img, &screen_info.colors.bpp, &screen_info.colors.size_line, &screen_info.colors.endian);
+        screen_info.swp = 0;
     }
 
-    // initialize rgb 
+    // initialize rg
         rgb.r_OnClick = rgb.g_OnClick = rgb.b_OnClick = rgb.shade_OnClick = FALSE;
         rgb.r =  rgb.g = rgb.b = 100;
         rgb.shade = 255;
@@ -240,6 +269,7 @@ int	main()
         mouse_OnClick.x = mouse_OnClick.y = 0;
         mouse_OnClick.img = NULL;
         mouse_OnClick.color = 0;
+        mouse_OnClick.bol = 0;
 
     // inisialize map
     {
