@@ -2,7 +2,7 @@
 
 The goal of ``Map_Visualizer`` is to make *something* with the pixels.
 
-### First of all:
+## First of all:
 
 This project is written in ``c`` using ``mini-libx`` Library, 
 This old library has a little builtin-funcs that's can make my project show on the graphics
