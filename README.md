@@ -1,4 +1,4 @@
-# Map_Visualizer
+# Map Visualizer
 
 The goal of ``Map_Visualizer`` is to make *something* with the pixels.
 
