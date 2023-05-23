@@ -11,6 +11,18 @@ This old library has a little builtin-funcs that's can make my project show on t
 <img src="https://github.com/ael-bekk/rPainter/blob/main/.head/1.png" width=800 height=600/>
 <img src="https://github.com/ael-bekk/rPainter/blob/main/.head/2.png" width=800 height=600/>
 
+## Commands
+
+| KEY           | Action        |
+| ------------- |:-------------:|
+| `SCROLL UP`         | zoom in     |
+| `SCROLL DOWN`   | zoum out         |
+| `CNTRL+SCROLL UP`         | increase brush size |
+| `CNTRL+SCROLL DOWN`         | decrease brush size |
+| `CNTRL+MOUSE RIGHT CLICK`           | displacement     |
+| `F`           | change from brush to flood    |
+| `B`           | change from flood to brush    |
+
 ## Run Programe:
 
 _ if you'ar a 42-student :
