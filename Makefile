@@ -1,4 +1,4 @@
-NAME	= Editor
+NAME	= rPainter
 
 SRCS	= main.c \
 			lib/rectangle.c \
@@ -16,7 +16,7 @@ all:	$(NAME) $(SRCS)
 
 $(NAME):  	$(SRCS)
 	@$(FLGS) -lmlx -framework OpenGL -framework AppKit $(SRCS) -o $(NAME) -fsanitize=address -g
-	@echo "\033[0;32mEditor is ready"
+	@echo "\033[0;32mrPainter is ready"
 
 clean:
 	@$(RM) $(NAME)
